@@ -11,6 +11,7 @@ import { Checkout } from 'pages/checkout';
 import { ThankYou } from 'pages/thankYou';
 import { Info } from 'pages/info';
 import { Admin } from 'pages/admin';
+import { DataProvider } from 'components/data-provider';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -54,7 +55,9 @@ const router = createBrowserRouter([
 ]);
 
 root.render(
-  <RouterProvider router={router} />
+  <DataProvider>
+    <RouterProvider router={router} />
+  </DataProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
