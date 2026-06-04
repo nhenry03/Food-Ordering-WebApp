@@ -1,5 +1,10 @@
 export type PaymentMethodType = 'cash' | 'card' | 'phone';
 
+export type ImageType = {
+    src: string,
+    title: string
+}
+
 export interface IRestaurant {
     name: string,
     address: string,
@@ -9,12 +14,12 @@ export interface IRestaurant {
     paymentMethods: PaymentMethodType[],
 }
 
-export interface Category {
+export interface ICategory {
     id: string,
     createdDate: string,
     lastUpdate: string,
     createdBy: string,
-    image: string,
+    image: ImageType,
     title: string,
     description: string,
 }
@@ -31,14 +36,14 @@ export interface IVariant {
     choices: IChoice[]
 }
 
-export interface Item {
+export interface IItem {
     id: string,
     createdDate: string,
     lastUpdate: string,
     createdBy: string,
     label: string,
     description: string,
-    image: string,
+    image: ImageType,
     price: number,
     category: string,
     variants: IVariant[]
