@@ -4,35 +4,44 @@
 
 @layer base {
   :root {
-    --background: 0 5% 98%;
-    --foreground: 180 2% 11%;
+    --background: 34 23% 94%; /* #f4f1ea - Warm light beige background */
+    --foreground: 30 10% 11%; /* #1b1c1c - Charcoal primary text */
 
-    --card: 0 0% 100%;
-    --card-foreground: 180 2% 11%;
+    --card: 0 0% 100%; /* #ffffff - White card surface */
+    --card-foreground: 30 10% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 180 2% 11%;
+    --popover-foreground: 30 10% 11%;
 
-    --primary: 16 100% 35%;
+    --primary: 12 57% 44%; /* #b24b31 - Terracotta brick orange */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 1% 37%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 0 0% 90%;
+    --secondary-foreground: 180 1% 10%;
 
-    --muted: 0 3% 93%;
-    --muted-foreground: 12 23% 29%;
+    --muted: 36 14% 90%; /* #eae6df - Light muted warm gray */
+    --muted-foreground: 23 8% 44%; /* #7a6e67 - Muted gray/brown */
 
-    --accent: 0 3% 93%;
-    --accent-foreground: 180 2% 11%;
+    --accent: 36 14% 90%;
+    --accent-foreground: 30 10% 11%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 13 47% 80%;
-    --input: 13 47% 80%;
-    --ring: 16 100% 35%;
+    --border: 38 15% 89%; /* #eae5db - Light border sand */
+    --input: 38 15% 89%;
+    --ring: 12 57% 44%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Hex helper variables for CSS stylesheet variables */
+    --background-hex: #f4f1ea;
+    --foreground-hex: #1b1c1c;
+    --card-hex: #ffffff;
+    --primary-hex: #b24b31;
+    --border-hex: #eae5db;
+    --muted-hex: #eae6df;
+    --muted-foreground-hex: #7a6e67;
   }
 
   .dark {
@@ -70,6 +79,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }

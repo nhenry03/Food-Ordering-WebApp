@@ -8,11 +8,13 @@ interface IDataProviderContext {
     restaurantInfo?: IRestaurant;
     categories: ICategory[];
     items: IItem[];
+    getItemById: (itemId: string) => IItem | undefined;
 }
 
 const DataProviderContext = createContext<IDataProviderContext>({
     categories: [],
-    items: []
+    items: [],
+    getItemById: () => undefined,
 });
 
 export const useDataProvider = () => {
@@ -51,6 +53,10 @@ export const DataProvider: FunctionComponent<PropsWithChildren> = ({ children })
         setRestaurantInfo(docSnap.data() as IRestaurant);
     };
 
+    const getItemById = (itemId: string) => {
+        return items.find((item) => item.id === itemId);
+    };
+
     async function fetchData() {
         await fetchItems();
         await fetchCategories();
@@ -63,7 +69,7 @@ export const DataProvider: FunctionComponent<PropsWithChildren> = ({ children })
     }, []);
 
     return (
-        <DataProviderContext.Provider value={{ restaurantInfo, categories, items }}>
+        <DataProviderContext.Provider value={{ restaurantInfo, categories, items, getItemById }}>
             {isReady ? children : (
                 <div className="flex h-screen w-full items-center justify-center">
                     <SpinnerBadge />
