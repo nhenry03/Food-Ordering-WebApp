@@ -358,26 +358,6 @@ export const Menu = () => {
                                             <span className="card-price">
                                                 ${item.price.toFixed(2)}
                                             </span>
-                                            <button
-                                                className="add-btn"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    // Add to cart logic here
-                                                }}
-                                            >
-                                                <svg
-                                                    width="14" height="14"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="2.5"
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                >
-                                                    <path d="M12 4.5v15m7.5-7.5h-15" />
-                                                </svg>
-                                                Add to Cart
-                                            </button>
                                         </div>
                                     </div>
                                 </div>

@@ -9,7 +9,7 @@ export const Navbar = () => {
                 {/* Logo */}
                 <a href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight text-white hover:opacity-90 transition" onClick={() => { navigate('/', { replace: true }) }}>
                     <UtensilsCrossed className="size-6 text-primary" />
-                    <span>GourmetGo</span>
+                    <span>MoonGate</span>
                 </a>
 
                 {/* Right Side Action Buttons */}

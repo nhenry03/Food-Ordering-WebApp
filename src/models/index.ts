@@ -56,6 +56,7 @@ export interface ILineValue {
 }
 
 export interface ILine {
+    itemId: string,
     label: string,
     price: number,
     quantity: number,
@@ -75,7 +76,7 @@ export interface IOrder {
     reason?: string,
     pickupTime: string,
     paymentMethod: PaymentMethodType[],
-    status?: OrderStatus[],
+    status?: OrderStatus,
     subTotal: number,
     total: number
 }

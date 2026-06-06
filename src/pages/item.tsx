@@ -1,6 +1,7 @@
 import { useDataProvider } from "../components/data-provider";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { ILine } from "models";
 
 /* ── Design tokens from DESIGNITEMPAGE.md ─────────────────────────────── */
 const C = {
@@ -18,30 +19,53 @@ const C = {
 } as const;
 
 export const Item = () => {
-    const { getItemById } = useDataProvider();
+    const { getItemById, addToCart, updateLine, lines } = useDataProvider();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const editIndex = searchParams.get('edit');
 
     const item = getItemById(id!);
 
     // State: Record<variantType, choiceLabel[]>
     const [selectedChoices, setSelectedChoices] = useState<Record<string, string[]>>({});
     const [quantity, setQuantity] = useState<number>(1);
+    const [instruction, setInstruction] = useState<string>("");
 
-    // Pre-select first option for single-select variants (unless they only have 1 option)
+    // Pre-select first option for single-select variants, or load from editIndex if editing
     useEffect(() => {
-        if (item?.variants) {
-            const initial: Record<string, string[]> = {};
-            item.variants.forEach((variant) => {
-                if (!variant.allowedMultiple && variant.choices.length > 1) {
-                    initial[variant.type] = [variant.choices[0].label];
-                } else {
+        if (item) {
+            if (editIndex !== null && lines[Number(editIndex)]) {
+                const editLine = lines[Number(editIndex)];
+                setQuantity(editLine.quantity);
+                setInstruction(editLine.instruction || "");
+
+                const initial: Record<string, string[]> = {};
+                item.variants?.forEach((variant) => {
                     initial[variant.type] = [];
-                }
-            });
-            setSelectedChoices(initial);
+                });
+
+                editLine.value?.forEach(val => {
+                    if (initial[val.variant]) {
+                        initial[val.variant].push(val.value);
+                    } else {
+                        initial[val.variant] = [val.value];
+                    }
+                });
+                setSelectedChoices(initial);
+            } else if (item.variants) {
+                const initial: Record<string, string[]> = {};
+                item.variants.forEach((variant) => {
+                    if (!variant.allowedMultiple && variant.choices.length > 1) {
+                        initial[variant.type] = [variant.choices[0].label];
+                    } else {
+                        initial[variant.type] = [];
+                    }
+                });
+                setSelectedChoices(initial);
+            }
         }
-    }, [item]);
+    }, [item, editIndex]);
 
     if (!item) {
         return (
@@ -93,6 +117,21 @@ export const Item = () => {
         });
     };
 
+    const subtotal = (() => {
+        let total = item.price || 0;
+        if (item.variants) {
+            item.variants.forEach((variant) => {
+                const selections = selectedChoices[variant.type] || [];
+                variant.choices.forEach((choice) => {
+                    if (selections.includes(choice.label)) {
+                        total += choice.price || 0;
+                    }
+                });
+            });
+        }
+        return total * quantity;
+    })();
+
     const handleAddToOrder = () => {
         const missingRequired = item.variants?.filter((variant) => {
             if (variant.isRequired) {
@@ -111,23 +150,37 @@ export const Item = () => {
             return;
         }
 
-        const selectedVariantsPayload = Object.entries(selectedChoices).map(([type, labels]) => {
-            const variantObj = item.variants.find((v) => v.type === type);
-            const choicesSelected = variantObj?.choices.filter((c) => labels.includes(c.label)) || [];
-            return { type, choices: choicesSelected };
+        const lineValues = Object.entries(selectedChoices).flatMap(([type, labels]) => {
+            const variantObj = item.variants?.find((v) => v.type === type);
+            if (!variantObj) return [];
+
+            return variantObj.choices
+                .filter((c) => labels.includes(c.label))
+                .map((c) => ({
+                    variant: variantObj.type,
+                    value: c.label,
+                    price: c.price || 0,
+                }));
         });
 
-        const orderItem = {
+        const lineItem: ILine = {
             itemId: item.id,
             label: item.label,
-            basePrice: item.price,
-            quantity,
-            variants: selectedVariantsPayload,
+            price: item.price,
+            quantity: quantity,
+            instruction: instruction,
+            value: lineValues,
         };
 
-        console.log("Adding to order:", orderItem);
-        alert(`Added ${quantity}x ${item.label} to order!`);
-        navigate("/");
+        if (editIndex !== null) {
+            updateLine(Number(editIndex), lineItem);
+            alert(`Updated ${quantity}x ${item.label} in order!`);
+            navigate("/cart");
+        } else {
+            addToCart(lineItem);
+            alert(`Added ${quantity}x ${item.label} to order!`);
+            navigate("/");
+        }
     };
 
     return (
@@ -243,6 +296,19 @@ export const Item = () => {
                         </div>
                     ))}
 
+                    {/* Special Instructions */}
+                    <div className="mb-6 last:mb-4">
+                        <label className="block text-base font-bold text-foreground mb-3">
+                            Special Instructions
+                        </label>
+                        <textarea
+                            value={instruction}
+                            onChange={(e) => setInstruction(e.target.value)}
+                            placeholder="Add a note (e.g., no onions, extra sauce)"
+                            className="w-full bg-white/40 border border-border rounded-xl p-4 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none min-h-[100px]"
+                        />
+                    </div>
+
                     {/* Quantity Stepper & Add Button Stacked */}
                     <div className="mt-8 pt-6 border-t border-border/50">
                         {/* Stepper */}
@@ -272,43 +338,11 @@ export const Item = () => {
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                             </svg>
-                            Add to Order
+                            {editIndex !== null ? "Update Order" : "Add to Order"} • ${subtotal.toFixed(2)}
                         </button>
                     </div>
                 </div>
             </div>
-
-            {/* Premium Centered Footer */}
-            <footer className="w-full max-w-7xl mx-auto px-6 border-t border-border pt-8 pb-12 mt-12 text-muted-foreground text-xs">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-6">
-                    {/* Navigation links */}
-                    <div className="flex gap-6">
-                        <a href="/" className="hover:text-foreground transition-colors">Home</a>
-                        <a href="/" className="hover:text-foreground transition-colors">Menu</a>
-                        <a href="/info" className="hover:text-foreground transition-colors">About Us</a>
-                        <a href="/info" className="hover:text-foreground transition-colors">Contact</a>
-                    </div>
-                    {/* Social icons */}
-                    <div className="flex gap-5 text-sm">
-                        <a href="#" className="hover:text-foreground transition-colors">
-                            <i className="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" className="hover:text-foreground transition-colors">
-                            <i className="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" className="hover:text-foreground transition-colors">
-                            <i className="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" className="hover:text-foreground transition-colors">
-                            <i className="fab fa-tiktok"></i>
-                        </a>
-                    </div>
-                </div>
-                <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-muted-foreground/60 border-t border-border/40 pt-4">
-                    <span>Copyright © 2022 - AI Menu Redesign</span>
-                    <span>www.GourmetGo</span>
-                </div>
-            </footer>
         </div>
     );
 };
