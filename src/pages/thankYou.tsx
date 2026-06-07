@@ -5,7 +5,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../utils/firebase";
 
 const ThankyouContent = () => {
-    const { order, restaurantInfo } = useDataProvider();
+    const { order, restaurantInfo, items } = useDataProvider();
 
     // Automatically transition from pending to confirmed after 7s (the duration of the filling logo)
     useEffect(() => {
@@ -153,11 +153,13 @@ const ThankyouContent = () => {
                                 const variantsTotal = line.value?.reduce((sum, v) => sum + (v.price || 0), 0) || 0;
                                 const itemTotal = (line.price + variantsTotal) * line.quantity;
                                 const variantsText = line.value?.map(v => v.value).join(", ");
+                                const itemInfo = items.find((i) => i.id === line.itemId);
+                                const itemImage = itemInfo?.image?.src || `https://ui-avatars.com/api/?name=${encodeURIComponent(line.label)}&background=random&color=fff&size=200`;
 
                                 return (
                                     <div key={idx} className="flex gap-4 items-start">
                                         <div className="w-20 h-20 rounded-xl bg-[#F5F5F5] flex-shrink-0 overflow-hidden border border-[#EBEBEB]">
-                                            <img src={(line as any).image?.src || `https://ui-avatars.com/api/?name=${encodeURIComponent(line.label)}&background=random&color=fff&size=200`} alt={line.label} className="w-full h-full object-cover" />
+                                            <img src={itemImage} alt={line.label} className="w-full h-full object-cover" />
                                         </div>
                                         <div className="flex-grow pt-0.5">
                                             <div className="flex justify-between items-start mb-1">
