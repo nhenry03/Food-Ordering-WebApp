@@ -7,6 +7,7 @@ import { Route } from 'react-router-dom';
 import { Info } from 'components/info';
 import { IconButton } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
+import { OrderProps } from 'components/order-resource';
 
 const options: RAFirebaseOptions = {
     logging: true,
@@ -44,6 +45,7 @@ export const Admin = () => {
         <RAdmin layout={MyLayout} authProvider={authProvider} basename="/admin" dataProvider={dataProvider}>
             <Resource {...CategoryProps} />
             <Resource {...ItemProps} />
+            <Resource {...OrderProps} />
             <CustomRoutes>
                 <Route path="/info" element={<Info />} />
             </CustomRoutes>

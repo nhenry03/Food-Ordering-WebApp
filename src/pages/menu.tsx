@@ -65,6 +65,7 @@ export const Menu = () => {
     }, [categories, activeCategory]);
 
     const activeCategoryItems = items.filter((item) => item.category === activeCategory);
+    const activeCategoryObj = categories.find((c) => c.id === activeCategory);
 
     return (
         <>
@@ -80,6 +81,25 @@ export const Menu = () => {
                     color: ${C.onSurface};
                 }
 
+                /* ── Top Section ── */
+                .top-section {
+                    position: relative;
+                    background-size: cover;
+                    background-position: center;
+                    background-color: ${C.surfaceLow};
+                    transition: background-image 0.5s ease;
+                }
+                .top-section::before {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
+                    background: rgba(0, 0, 0, 0.6);
+                }
+                .top-section-content {
+                    position: relative;
+                    z-index: 1;
+                }
+
                 /* ── Header ── */
                 .menu-header {
                     text-align: center;
@@ -90,8 +110,9 @@ export const Menu = () => {
                     font-weight: ${T.displayLg.fontWeight};
                     line-height: ${T.displayLg.lineHeight};
                     letter-spacing: ${T.displayLg.letterSpacing};
-                    color: ${C.onSurface};
+                    color: #ffffff;
                     margin: 0 0 ${S[8]}px;
+                    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
                 }
                 @media (max-width: 640px) {
                     .menu-title {
@@ -103,9 +124,10 @@ export const Menu = () => {
                     font-size: ${T.bodyMd.fontSize}px;
                     font-weight: ${T.bodyMd.fontWeight};
                     line-height: ${T.bodyMd.lineHeight};
-                    color: ${C.neutral};
+                    color: rgba(255, 255, 255, 0.85);
                     max-width: 480px;
                     margin: 0 auto;
+                    text-shadow: 0 1px 4px rgba(0,0,0,0.4);
                 }
 
                 /* ── Category tabs ── */
@@ -115,33 +137,44 @@ export const Menu = () => {
                     justify-content: center;
                     gap: ${S[8]}px;
                     padding-bottom: ${S[24]}px;
-                    margin-bottom: ${S[24]}px;
-                    border-bottom: 1px solid ${C.outlineVariant};
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
                 }
 
                 .tab-btn {
                     padding: ${S[6]}px ${S[16]}px;
                     border-radius: ${R.full};
-                    background: ${C.surface};
-                    border: 1px solid ${C.outlineVariant};
+                    background: rgba(255, 255, 255, 0.1);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    backdrop-filter: blur(8px);
                     font-family: 'Inter', sans-serif;
                     font-size: ${T.bodyMd.fontSize}px;
                     font-weight: ${T.labelMd.fontWeight};
-                    color: ${C.neutral};
+                    color: #ffffff;
                     cursor: pointer;
                     transition: all 0.2s ease;
                 }
                 .tab-btn:hover {
-                    color: ${C.onSurface};
-                    border-color: ${C.outline};
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+                    background: rgba(255, 255, 255, 0.25);
+                    border-color: rgba(255, 255, 255, 0.4);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
                 }
                 .tab-btn.is-active {
                     color: ${C.onPrimary};
                     background: ${C.primary};
                     border-color: ${C.primary};
                     font-weight: 600;
-                    box-shadow: 0 4px 12px rgba(178, 75, 49, 0.15);
+                    box-shadow: 0 4px 12px rgba(178, 75, 49, 0.25);
+                }
+
+                /* ── Category Description ── */
+                .category-description {
+                    text-align: center;
+                    max-width: 700px;
+                    margin: 0 auto ${S[36]}px;
+                    font-size: 17px;
+                    line-height: 1.6;
+                    color: ${C.neutral};
+                    font-style: italic;
                 }
 
                 /* ── Items grid ── */
@@ -299,33 +332,53 @@ export const Menu = () => {
             `}</style>
 
             <div className="menu-root">
+                {/* ── Top Section ── */}
+                <div
+                    className="top-section"
+                    style={{
+                        backgroundImage: `url(${activeCategoryObj?.image?.src})`,
+                    }}
+                >
+                    <div className="top-section-content" style={{
+                        maxWidth: 1280,
+                        margin: "0 auto",
+                        padding: `112px ${S[20]}px 0`,
+                    }}>
+                        {/* ── Page header ── */}
+                        <div className="menu-header">
+                            <h1 className="menu-title">Our Menu</h1>
+                            <p className="menu-subtitle">
+                                Explore our curated selection of exquisite dishes, crafted with the finest
+                                ingredients for an exceptional dining experience.
+                            </p>
+                        </div>
+
+                        {/* ── Category tabs ── */}
+                        <div className="tab-bar">
+                            {categories.map((category) => (
+                                <button
+                                    key={category.id}
+                                    className={`tab-btn${activeCategory === category.id ? " is-active" : ""}`}
+                                    onClick={() => setActiveCategory(category.id)}
+                                >
+                                    {category.title}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
                 <div style={{
                     maxWidth: 1280,
                     margin: "0 auto",
-                    padding: `112px ${S[20]}px ${S[40]}px`,
+                    padding: `${S[36]}px ${S[20]}px ${S[40]}px`,
                 }}>
-
-                    {/* ── Page header ── */}
-                    <div className="menu-header">
-                        <h1 className="menu-title">Our Menu</h1>
-                        <p className="menu-subtitle">
-                            Explore our curated selection of exquisite dishes, crafted with the finest
-                            ingredients for an exceptional dining experience.
-                        </p>
-                    </div>
-
-                    {/* ── Category tabs ── */}
-                    <div className="tab-bar">
-                        {categories.map((category) => (
-                            <button
-                                key={category.id}
-                                className={`tab-btn${activeCategory === category.id ? " is-active" : ""}`}
-                                onClick={() => setActiveCategory(category.id)}
-                            >
-                                {category.title}
-                            </button>
-                        ))}
-                    </div>
+                    {/* ── Category Description ── */}
+                    {activeCategoryObj?.description && (
+                        <div className="category-description">
+                            <p>{activeCategoryObj.description}</p>
+                        </div>
+                    )}
 
                     {/* ── Items grid ── */}
                     {activeCategoryItems.length > 0 ? (

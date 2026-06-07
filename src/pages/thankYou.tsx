@@ -14,7 +14,7 @@ const ThankyouContent = () => {
                 const newPickupTime = new Date(Date.now() + 20 * 60000);
                 updateDoc(doc(db, 'order', (order as any).id), {
                     status: 'confirmed',
-                    pickupTime: newPickupTime.toTimeString().slice(0, 5)
+                    pickupTime: newPickupTime
                 });
             }, 7000);
             return () => clearTimeout(timer);
@@ -114,7 +114,6 @@ const ThankyouContent = () => {
 
     if (order.status === 'confirmed') {
         const orderIdText = (order as any).id?.substring(0, 8).toUpperCase() || "GG-84729-XT";
-
         return (
             <div className="min-h-screen bg-[#FAFAFA] flex flex-col items-center pt-20 px-6 font-sans pb-24">
                 {/* Check Logo */}
@@ -129,7 +128,15 @@ const ThankyouContent = () => {
                 </p>
 
                 <h2 className="text-[22px] font-bold text-[#A33A1F] mb-1.5 tracking-tight">
-                    Estimated Pickup: {order.pickupTime}
+                    Estimated Pickup: {
+                        (order.pickupTime as any)
+                            .toDate()
+                            .toLocaleTimeString("en-NZ", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false,
+                            })
+                    }
                 </h2>
                 <p className="text-[13px] text-[#666666] mb-10 font-medium">Order #{orderIdText}</p>
 
