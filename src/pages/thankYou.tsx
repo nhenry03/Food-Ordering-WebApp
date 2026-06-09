@@ -23,6 +23,22 @@ const ThankyouContent = () => {
 
     if (!order) return null;
 
+    const initials = restaurantInfo?.name
+        ? restaurantInfo.name.split(' ').map(word => word[0]).join('').substring(0, 2).toUpperCase()
+        : 'GG';
+
+    let date = new Date();
+    if ((order as any)?.createdAt?.seconds) {
+        date = new Date((order as any).createdAt.seconds * 1000);
+    }
+    const yymmdd = `${String(date.getFullYear()).slice(-2)}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}`;
+
+    // Use the strictly incremental orderNumber from the backend
+    const orderNumber = (order as any).orderNumber || 1;
+    const xxx = String(orderNumber).padStart(3, '0');
+
+    const orderIdText = `${initials}${yymmdd}-${xxx}`;
+
     if (order.status === 'pending') {
         return (
             <div className="min-h-screen bg-[#FAFAFA] flex flex-col items-center pt-20 px-6 font-sans">
@@ -63,7 +79,7 @@ const ThankyouContent = () => {
                     <div className="flex justify-between items-start mb-6">
                         <div>
                             <p className="text-[11px] font-bold text-[#8A5A44] uppercase tracking-wider mb-1.5">Order Number</p>
-                            <h2 className="text-2xl font-bold text-[#1A1A1A]">#{(order as any).id?.substring(0, 8).toUpperCase() || "GG-84920"}</h2>
+                            <h2 className="text-2xl font-bold text-[#1A1A1A]">#{orderIdText}</h2>
                         </div>
                         <div className="bg-[#F3EFEA] text-[#8A5A44] px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wide">
                             Pending
@@ -113,7 +129,6 @@ const ThankyouContent = () => {
     }
 
     if (order.status === 'confirmed') {
-        const orderIdText = (order as any).id?.substring(0, 8).toUpperCase() || "GG-84729-XT";
         return (
             <div className="min-h-screen bg-[#FAFAFA] flex flex-col items-center pt-20 px-6 font-sans pb-24">
                 {/* Check Logo */}

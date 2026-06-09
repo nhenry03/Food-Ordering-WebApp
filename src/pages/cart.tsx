@@ -60,7 +60,7 @@ export const Cart = () => {
                                             +
                                         </button>
                                     </div>
-                                    <span className="font-bold text-foreground text-lg uppercase tracking-wide">{line.label}</span>
+                                    <span className="font-bold text-foreground text-lg tracking-wide">{line.label}</span>
                                 </div>
                                 <div className="flex items-center gap-6">
                                     <span className="font-medium text-foreground text-lg">${(line.price * line.quantity).toFixed(2)}</span>
@@ -101,7 +101,7 @@ export const Cart = () => {
                             {/* Special Instructions */}
                             {line.instruction && (
                                 <div className="ml-8 mt-2.5 text-[15px] text-foreground/80">
-                                    <span className="italic">Instruction:</span> {line.instruction}
+                                    <span className="italic">Instructions:</span> {line.instruction}
                                 </div>
                             )}
                         </div>
